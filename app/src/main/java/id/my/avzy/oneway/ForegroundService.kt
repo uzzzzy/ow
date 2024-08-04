@@ -20,7 +20,7 @@ class ForegroundService: Service() {
     }
 
     private var lastBatteryPct: Int = 0 // store last battery
-    private var SECRET_KEY = BuildConfig.SECRET_KEY
+    private var secretKey = BuildConfig.SECRET_KEY
 
     private val batteryReceiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -51,7 +51,7 @@ class ForegroundService: Service() {
         val filter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
         registerReceiver(batteryReceiver, filter)
 
-        Log.d("SECRET_KEY", SECRET_KEY)
+        Log.d("SECRET_KEY", secretKey)
     }
 
     override fun onDestroy() {

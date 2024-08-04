@@ -1,13 +1,15 @@
 package id.my.avzy.oneway
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import id.my.avzy.oneway.dto.PostDetail
+import io.noties.markwon.Markwon
+import io.noties.markwon.image.ImagesPlugin
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -28,6 +30,15 @@ class PostDetailActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
 
         fetchPostDetail(apiService, slug)
     }
@@ -51,10 +62,15 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun displayPostDetails(post: PostDetail) {
-        findViewById<TextView>(R.id.textViewTitle).text = post.title
-        findViewById<TextView>(R.id.textViewContent).text = post.content
+        findViewById<TextView>(R.id.textViewTitle).text = post.title.trim()
         findViewById<TextView>(R.id.textViewPublishedAt).text = formatDateString(post.publishedAt)
-        findViewById<TextView>(R.id.textViewViews).text = "Views: %d".format(post.views)
+        findViewById<TextView>(R.id.textViewViews).text = getString(R.string.post_views, post.views)
+
+        val content = post.content
+        val markwon = Markwon.builder(this)
+            .usePlugin(ImagesPlugin.create())
+            .build()
+        markwon.setMarkdown(findViewById(R.id.textViewContent), content)
     }
 
     private fun formatDateString(isoDate: String): String {

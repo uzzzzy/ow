@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Oneway</string>
+    <string name="post_views">Views: %1$d</string>
 </resources>
