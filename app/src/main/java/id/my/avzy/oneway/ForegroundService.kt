@@ -8,17 +8,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 
 data class Message(val content: String, val sender: String)
@@ -30,6 +22,7 @@ class ForegroundService: Service() {
     }
 
     private var lastBatteryPct: Int = 0 // store last battery
+    private var SECRET_KEY = BuildConfig.SECRET_KEY
 
     private val batteryReceiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -60,6 +53,7 @@ class ForegroundService: Service() {
         val filter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
         registerReceiver(batteryReceiver, filter)
 
+        Log.d("SECRET_KEY", SECRET_KEY)
     }
 
     override fun onDestroy() {
