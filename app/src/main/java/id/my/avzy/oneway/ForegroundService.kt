@@ -13,8 +13,6 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 
 
-data class Message(val content: String, val sender: String)
-
 class ForegroundService: Service() {
     companion object {
         const val CHANNEL_ID = "ForegroundServiceChannel"
