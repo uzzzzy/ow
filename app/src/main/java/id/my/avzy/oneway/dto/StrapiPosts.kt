@@ -1,4 +1,4 @@
-package id.my.avzy.oneway.data
+package id.my.avzy.oneway.dto
 
 import com.google.gson.annotations.SerializedName
 

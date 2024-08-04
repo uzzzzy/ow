@@ -1,5 +1,6 @@
 package id.my.avzy.oneway
 
+import PostAdapter
 import RetrofitClient
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +9,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import id.my.avzy.oneway.dto.PostSummary
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,8 +27,16 @@ class MainActivity : AppCompatActivity() {
         val serviceIntent = Intent(this, ForegroundService::class.java)
         startForegroundService(serviceIntent)
 
-        Log.d("main",baseUrl)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
+        getPosts()
+    }
+
+    private fun getPosts() {
         val apiService = RetrofitClient.getClient(baseUrl).create(ApiService::class.java)
         val call = apiService.getPosts()
 
@@ -33,12 +45,16 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val data = response.body()
 
-                    data?.message?.let { Log.d("success", it) }
-                    data?.result?.meta?.let {
-                        Log.d("total", it.total.toString())
-                    }
+                    val posts = data?.result?.data
 
-                    data?.result?.data?.forEachIndexed() { index, post ->
+                    if (posts != null) {
+                        setupRecyclerView(posts)
+                    } else {
+                        Log.d("success", "${data?.message}")
+                    }
+                    Log.d("success", "${data?.message}")
+                    Log.d("total", data?.result?.meta?.total.toString())
+                    data?.result?.data?.forEachIndexed { index, post ->
                         Log.d("post summary", "post $index: ${post.title}")
                     }
                 }
@@ -48,11 +64,12 @@ class MainActivity : AppCompatActivity() {
                 TODO("Not yet implemented")
             }
         })
+    }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    private fun setupRecyclerView(posts: List<PostSummary>) {
+        val recyclerViewPosts = findViewById<RecyclerView>(R.id.recyclerViewPosts)
+        val adapter = PostAdapter(posts)
+        recyclerViewPosts.layoutManager = LinearLayoutManager(this)
+        recyclerViewPosts.adapter = adapter
     }
 }
