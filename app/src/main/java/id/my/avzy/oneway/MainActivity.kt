@@ -1,6 +1,5 @@
 package id.my.avzy.oneway
 
-import PostAdapter
 import RetrofitClient
 import android.content.Intent
 import android.os.Bundle
@@ -68,8 +67,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView(posts: List<PostSummary>) {
         val recyclerViewPosts = findViewById<RecyclerView>(R.id.recyclerViewPosts)
-        val adapter = PostAdapter(posts)
         recyclerViewPosts.layoutManager = LinearLayoutManager(this)
-        recyclerViewPosts.adapter = adapter
+        recyclerViewPosts.adapter = PostAdapter(posts) { post ->
+            val intent = Intent(this, PostDetailActivity::class.java).apply {
+                putExtra("POST_SLUG", post.slug)
+            }
+            startActivity(intent)
+        }
     }
 }
