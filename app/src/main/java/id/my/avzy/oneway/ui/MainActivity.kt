@@ -1,6 +1,5 @@
-package id.my.avzy.oneway
+package id.my.avzy.oneway.ui
 
-import RetrofitClient
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,13 +9,18 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import id.my.avzy.oneway.dto.PostSummary
+import id.my.avzy.oneway.api.ApiService
+import id.my.avzy.oneway.service.ForegroundService
+import id.my.avzy.oneway.api.ListPostResponse
+import id.my.avzy.oneway.ui.adapter.PostAdapter
+import id.my.avzy.oneway.R
+import id.my.avzy.oneway.api.RetrofitClient
+import id.my.avzy.oneway.model.PostSummary
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
-    private var baseUrl = BuildConfig.BASE_URL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getPosts() {
-        val apiService = RetrofitClient.getClient(baseUrl).create(ApiService::class.java)
+        val apiService = RetrofitClient.createService<ApiService>()
         val call = apiService.getPosts()
 
         call.enqueue(object : Callback<ListPostResponse> {

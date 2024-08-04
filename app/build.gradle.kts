@@ -67,4 +67,5 @@ dependencies {
     implementation(libs.retrofit2.converter.gson)
     implementation(libs.markwon)
     implementation(libs.markwon.image)
+    implementation(libs.okhttp.logging.interceptor)
 }

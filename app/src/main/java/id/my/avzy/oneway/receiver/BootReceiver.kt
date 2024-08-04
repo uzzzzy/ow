@@ -1,8 +1,9 @@
-package id.my.avzy.oneway
+package id.my.avzy.oneway.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import id.my.avzy.oneway.service.ForegroundService
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

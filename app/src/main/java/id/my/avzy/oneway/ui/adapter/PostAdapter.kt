@@ -1,11 +1,12 @@
-package id.my.avzy.oneway
+package id.my.avzy.oneway.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import id.my.avzy.oneway.dto.PostSummary
+import id.my.avzy.oneway.R
+import id.my.avzy.oneway.model.PostSummary
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale

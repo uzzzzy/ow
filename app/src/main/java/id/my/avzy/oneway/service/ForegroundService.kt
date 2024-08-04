@@ -1,4 +1,4 @@
-package id.my.avzy.oneway
+package id.my.avzy.oneway.service
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -11,6 +11,8 @@ import android.content.IntentFilter
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import id.my.avzy.oneway.BuildConfig
+import id.my.avzy.oneway.R
 
 
 class ForegroundService: Service() {

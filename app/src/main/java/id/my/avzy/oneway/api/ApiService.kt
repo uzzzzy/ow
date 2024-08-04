@@ -1,8 +1,8 @@
-package id.my.avzy.oneway
+package id.my.avzy.oneway.api
 
-import id.my.avzy.oneway.dto.ApiResponse
-import id.my.avzy.oneway.dto.PostDetail
-import id.my.avzy.oneway.dto.StrapiPosts
+import id.my.avzy.oneway.model.ApiResponse
+import id.my.avzy.oneway.model.PostDetail
+import id.my.avzy.oneway.model.StrapiPosts
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

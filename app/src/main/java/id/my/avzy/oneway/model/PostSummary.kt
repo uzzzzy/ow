@@ -1,4 +1,4 @@
-package id.my.avzy.oneway.dto
+package id.my.avzy.oneway.model
 import com.google.gson.annotations.SerializedName
 
 data class PostSummary(

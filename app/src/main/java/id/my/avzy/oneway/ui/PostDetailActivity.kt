@@ -1,4 +1,4 @@
-package id.my.avzy.oneway
+package id.my.avzy.oneway.ui
 
 import android.os.Bundle
 import android.widget.TextView
@@ -7,7 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import id.my.avzy.oneway.dto.PostDetail
+import id.my.avzy.oneway.api.ApiService
+import id.my.avzy.oneway.api.PostDetailResponse
+import id.my.avzy.oneway.R
+import id.my.avzy.oneway.api.RetrofitClient
+import id.my.avzy.oneway.model.PostDetail
 import io.noties.markwon.Markwon
 import io.noties.markwon.image.ImagesPlugin
 import java.text.ParseException
@@ -15,16 +19,13 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PostDetailActivity : AppCompatActivity() {
-
-    private val baseUrl = BuildConfig.BASE_URL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_post_detail)
 
         val slug = intent.getStringExtra("POST_SLUG") ?: return
-        val apiService = RetrofitClient.getClient(baseUrl).create(ApiService::class.java)
-
+        val apiService = RetrofitClient.createService<ApiService>()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
