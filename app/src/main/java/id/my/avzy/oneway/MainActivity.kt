@@ -8,7 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import id.my.avzy.oneway.data.ApiResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,16 +28,23 @@ class MainActivity : AppCompatActivity() {
         val apiService = RetrofitClient.getClient(baseUrl).create(ApiService::class.java)
         val call = apiService.getPosts()
 
-        call.enqueue(object : Callback<ApiResponse> {
-            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+        call.enqueue(object : Callback<ListPostResponse> {
+            override fun onResponse(call: Call<ListPostResponse>, response: Response<ListPostResponse>) {
                 if (response.isSuccessful) {
                     val data = response.body()
 
                     data?.message?.let { Log.d("success", it) }
+                    data?.result?.meta?.let {
+                        Log.d("total", it.total.toString())
+                    }
+
+                    data?.result?.data?.forEachIndexed() { index, post ->
+                        Log.d("post summary", "post $index: ${post.title}")
+                    }
                 }
             }
 
-            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+            override fun onFailure(call: Call<ListPostResponse>, t: Throwable) {
                 TODO("Not yet implemented")
             }
         })
