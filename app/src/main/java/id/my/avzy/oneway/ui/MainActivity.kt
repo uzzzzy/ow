@@ -21,6 +21,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
+    private val apiService by lazy { RetrofitClient.createService<ApiService>() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,33 +41,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getPosts() {
-        val apiService = RetrofitClient.createService<ApiService>()
         val call = apiService.getPosts()
 
         call.enqueue(object : Callback<ListPostResponse> {
-            override fun onResponse(call: Call<ListPostResponse>, response: Response<ListPostResponse>) {
-                if (response.isSuccessful) {
-                    val data = response.body()
-
-                    val posts = data?.result?.data
-
-                    if (posts != null) {
-                        setupRecyclerView(posts)
-                    } else {
-                        Log.d("success", "${data?.message}")
-                    }
-                    Log.d("success", "${data?.message}")
-                    Log.d("total", data?.result?.meta?.total.toString())
-                    data?.result?.data?.forEachIndexed { index, post ->
-                        Log.d("post summary", "post $index: ${post.title}")
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<ListPostResponse>, t: Throwable) {
-                TODO("Not yet implemented")
-            }
+            override fun onResponse(call: Call<ListPostResponse>, response: Response<ListPostResponse>) = onResponse(response)
+            override fun onFailure(call: Call<ListPostResponse>, t: Throwable) = onFailure(t)
         })
+    }
+
+    private fun onResponse(response: Response<ListPostResponse>) {
+        response.body()?.result?.data?.let { posts ->
+            setupRecyclerView(posts)
+        }
+    }
+
+    private fun onFailure(t: Throwable) {
+        Log.e("MainActivity", "onFailure: $t")
     }
 
     private fun setupRecyclerView(posts: List<PostSummary>) {
