@@ -6,20 +6,25 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.messaging.FirebaseMessaging
+import id.my.avzy.oneway.BuildConfig.HOME_SERVER_URL
 import id.my.avzy.oneway.api.ApiService
 import id.my.avzy.oneway.service.ForegroundService
 import id.my.avzy.oneway.api.ListPostResponse
 import id.my.avzy.oneway.ui.adapter.PostAdapter
 import id.my.avzy.oneway.R
+import id.my.avzy.oneway.api.FcmApi
 import id.my.avzy.oneway.api.RetrofitClient
+import id.my.avzy.oneway.api.SendTokenRequest
 import id.my.avzy.oneway.model.PostSummary
 import retrofit2.Call
 import retrofit2.Callback
@@ -27,6 +32,7 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private val apiService by lazy { RetrofitClient.createService<ApiService>() }
+    private val fcmService by lazy { RetrofitClient.createService<FcmApi>(HOME_SERVER_URL) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,28 +58,52 @@ class MainActivity : AppCompatActivity() {
     private fun askPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                // TODO: Implement this method to send token to your app server.
+                postNotifications()
             } else if (shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
-                // TODO: Implement this method to send token to your app server.
+                Toast.makeText(this, "Please grant permission to send notifications", Toast.LENGTH_LONG).show()
             } else {
-                // TODO: Implement this method to send token to your app server.
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
             }
         } else {
-            // exit application
-            val serviceIntent = Intent(this, ForegroundService::class.java)
-            startForegroundService(serviceIntent)
+            postNotifications()
+        }
+    }
 
-            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    return@addOnCompleteListener
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                postNotifications()
+            } else {
+                Toast.makeText(this, "Please grant permission to send notifications", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun postNotifications() {
+        // exit application
+        val serviceIntent = Intent(this, ForegroundService::class.java)
+        startForegroundService(serviceIntent)
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                return@addOnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            Log.d("Token", token)
+            val call = fcmService.sendToken(SendTokenRequest(token))
+            call.enqueue(object : Callback<Any> {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    Log.d("Response", response.toString())
                 }
 
-                // Get new FCM registration token
-                val token = task.result
-
-                // TODO: Implement this method to send token to your app server.
-                Log.d("Token", "$token")
-            }
+                override fun onFailure(call: Call<Any>, t: Throwable) {
+                    Log.d("Failure", t.toString())
+                }
+            })
         }
     }
 

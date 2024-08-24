@@ -1,19 +1,17 @@
 package id.my.avzy.oneway.api
 
-import id.my.avzy.oneway.BuildConfig
+import id.my.avzy.oneway.BuildConfig.BASE_URL
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = BuildConfig.BASE_URL
-
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
-    private val httpClient = OkHttpClient.Builder()
+    val httpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
         .build()
 
@@ -25,5 +23,16 @@ object RetrofitClient {
 
     inline fun <reified T> createService(): T {
         return retrofit.create(T::class.java)
+    }
+
+    // function to create service with custom base url
+    inline fun <reified T> createService(baseUrl: String): T {
+        return Retrofit.Builder()
+            .baseUrl(baseUrl) // Set the base URL for the API
+            .client(httpClient) // Set the HTTP client
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(T::class.java)
+
     }
 }

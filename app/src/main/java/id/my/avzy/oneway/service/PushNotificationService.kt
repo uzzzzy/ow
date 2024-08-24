@@ -16,8 +16,8 @@ import id.my.avzy.oneway.ui.MainActivity
 class PushNotificationService: FirebaseMessagingService() {
     companion object {
         const val CHANNEL_ID = "PushNotificationServiceChannel"
-        const val NOTIFICATION_ID = 2
     }
+    private var notificationId = 1
 
     override fun onCreate() {
         super.onCreate()
@@ -37,7 +37,8 @@ class PushNotificationService: FirebaseMessagingService() {
 
         val notification = createNotification(message.notification?.title.toString(), message.notification?.body.toString())
         val notificationManager = getSystemService(NotificationManager::class.java)
-        notificationManager.notify(NOTIFICATION_ID, notification)
+        notificationManager.notify(notificationId, notification)
+        notificationId++
     }
 
     private fun createNotificationChannel() {
@@ -55,8 +56,6 @@ class PushNotificationService: FirebaseMessagingService() {
 
     private fun createNotification(title: String, body: String): Notification {
         Log.d("PushNotificationService", "createNotification: $title")
-        val fullScreenIntent = Intent(this, MainActivity::class.java)
-        val fullScreenPendingIntent = PendingIntent.getActivity(this, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(title)
@@ -64,7 +63,7 @@ class PushNotificationService: FirebaseMessagingService() {
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setDefaults(Notification.DEFAULT_ALL)
             .setPriority(1)
-            .setFullScreenIntent(fullScreenPendingIntent, true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .build()
     }
 }

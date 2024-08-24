@@ -1,17 +1,15 @@
 package id.my.avzy.oneway.api
 
 import id.my.avzy.oneway.model.SendMessage
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-interface FcmApi {
-    @POST("/send")
-    suspend fun sendMessage(
-        @Body body: SendMessage
-    )
+data class SendTokenRequest(
+    val token: String
+)
 
-    @POST("/broadcast")
-    suspend fun broadcast(
-        @Body body: SendMessage
-    )
+interface FcmApi {
+    @POST("/fcm/token")
+    fun sendToken(@Body request: SendTokenRequest): Call<Any>
 }
