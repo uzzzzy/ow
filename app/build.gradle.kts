@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
 
+    alias(libs.plugins.googleServices)
 }
 
 android {
@@ -68,4 +69,7 @@ dependencies {
     implementation(libs.markwon)
     implementation(libs.markwon.image)
     implementation(libs.okhttp.logging.interceptor)
+
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
 }
